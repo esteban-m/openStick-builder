@@ -102,6 +102,9 @@ systemctl enable nftables
 # Enable hostapd for WiFi AP
 systemctl enable hostapd
 
+# Enable ADB daemon
+systemctl enable adbd
+
 # Make sure ModemManager is enabled for LTE
 systemctl enable ModemManager
 systemctl enable rmtfs # unsure if needed i forgot why i added it. But builds take a long time so i don't want to remove it now
