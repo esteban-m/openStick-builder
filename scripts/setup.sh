@@ -17,6 +17,8 @@ rm -f "/etc/locale.gen"
 apt update -qqy
 apt upgrade -qqy --with-new-pkgs
 apt install -qqy --no-install-recommends \
+    android-tools-adb \
+    android-tools-fastboot \
     dnsmasq \
     libconfig11 \
     libconfig-dev \
