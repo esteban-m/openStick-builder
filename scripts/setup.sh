@@ -102,27 +102,7 @@ systemctl enable nftables
 # Enable hostapd for WiFi AP
 systemctl enable hostapd
 
-# Create and enable ADB daemon service
-cat <<EOF > /etc/systemd/system/adbd.service
-[Unit]
-Description=Android Debug Bridge Daemon
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/adbd
-Restart=always
-RestartSec=5
-User=root
-Group=root
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl enable adbd.service
+# ADB is now handled by the USB gadget service
 
 # Make sure ModemManager is enabled for LTE
 systemctl enable ModemManager
