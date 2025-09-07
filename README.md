@@ -7,15 +7,15 @@ This builder uses the precompiled [kernel](https://pkgs.postmarketos.org/package
 > Branch overview:
 > - `debian`  : Debian (stable) based image (default branch).
 > - `ubuntu-24.04` : Ubuntu 24.04 LTS (Noble) based image (identical build steps).
-> - Alpine (upstream) : Refer to the [original repository's](https://github.com/kinsamanka/OpenStick-Builder/tree/alpine) alpine branch (not maintained here).
+> - Alpine (upstream) : Refer to the [original repository's](https://github.com/esteban-m/openStick-builder/tree/alpine) alpine branch (not maintained here).
 
 ## Build Instructions
 ### Build locally
 This has been tested to work on **Ubuntu 22.04, 24.04 and 25.04**
 - clone
   ```shell
-  git clone --recurse-submodules https://github.com/Mio-sha512/OpenStick-Builder.git
-  cd OpenStick-Builder/
+  git clone --recurse-submodules https://github.com/esteban-m/openStick-builder.git
+  cd openStick-builder/
   ```
 #### Quick (Debian branch)
 ```shell
