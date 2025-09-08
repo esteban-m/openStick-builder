@@ -17,7 +17,7 @@ rm -f "/etc/locale.gen"
 apt update -qqy
 apt upgrade -qqy --with-new-pkgs
 apt install -qqy --no-install-recommends \
-    android-tools-adb \
+    android-tools-adbd \
     android-tools-fastboot \
     dnsmasq \
     libconfig11 \
@@ -105,7 +105,8 @@ systemctl enable hostapd
 # Disable getty on USB serial port to use it for ADB
 systemctl disable getty@ttyGS0.service
 
-# ADB daemon will be started by rc.local on USB serial port
+# Enable ADB daemon
+systemctl enable adbd
 
 # Make sure ModemManager is enabled for LTE
 systemctl enable ModemManager

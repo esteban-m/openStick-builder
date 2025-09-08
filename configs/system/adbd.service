@@ -1,0 +1,26 @@
+[Unit]
+Description=Android Debug Bridge Daemon
+After=multi-user.target msm8916-usb-gadget.service
+Wants=multi-user.target
+Requires=msm8916-usb-gadget.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/adbd -a -P /dev/ttyGS0
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/tmp /var/tmp
+
+# Network access
+PrivateNetwork=false
+
+[Install]
+WantedBy=multi-user.target

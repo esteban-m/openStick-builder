@@ -31,40 +31,14 @@ cleanup_wwan() {
 
 
 start_adb() {
-    # Start ADB daemon on USB serial port
-    if command -v adbd >/dev/null 2>&1; then
-        echo "Starting ADB daemon on USB serial port..."
-        
-        # Wait for USB serial port to be available
-        max_wait=10
-        waited=0
-        while [ $waited -lt $max_wait ]; do
-            if [ -e /dev/ttyGS0 ]; then
-                break
-            fi
-            echo "Waiting for USB serial port /dev/ttyGS0..."
-            sleep 1
-            waited=$((waited + 1))
-        done
-        
-        if [ -e /dev/ttyGS0 ]; then
-            echo "Starting ADB on USB serial port /dev/ttyGS0"
-            # Set proper permissions
-            chmod 666 /dev/ttyGS0
-            
-            # Start adbd on serial port
-            nohup adbd -a -P /dev/ttyGS0 >/var/log/adbd.log 2>&1 &
-            echo $! > /var/run/adbd.pid
-            echo "ADB daemon started with PID: $(cat /var/run/adbd.pid)"
-        else
-            echo "USB serial port not found, starting ADB in default mode"
-            nohup adbd -a >/var/log/adbd.log 2>&1 &
-            echo $! > /var/run/adbd.pid
-            echo "ADB daemon started with PID: $(cat /var/run/adbd.pid)"
-        fi
-    else
-        echo "ADB daemon not found"
+    # Ensure USB serial port has proper permissions for ADB
+    if [ -e /dev/ttyGS0 ]; then
+        echo "Setting permissions for USB serial port /dev/ttyGS0"
+        chmod 666 /dev/ttyGS0
     fi
+    
+    # The ADB daemon service will start automatically via systemd
+    echo "ADB daemon will be started by systemd service"
 }
 
 main
