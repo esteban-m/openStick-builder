@@ -37,8 +37,16 @@ start_adb() {
         chmod 666 /dev/ttyGS0
     fi
     
-    # The ADB daemon service will start automatically via systemd
-    echo "ADB daemon will be started by systemd service"
+    # Start ADB daemon in server mode
+    echo "Starting ADB daemon in server mode..."
+    if command -v adb >/dev/null 2>&1; then
+        # Start adb in server mode
+        nohup adb -a >/var/log/adbd.log 2>&1 &
+        echo $! > /var/run/adbd.pid
+        echo "ADB daemon started with PID: $(cat /var/run/adbd.pid)"
+    else
+        echo "ADB not found"
+    fi
 }
 
 main
