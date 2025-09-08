@@ -139,7 +139,6 @@ setup_gadget() {
 
     # Load required modules
     modprobe libcomposite
-    modprobe usb_f_fs
 
     # Mount configfs if not already mounted
     if ! mountpoint -q /sys/kernel/config; then
@@ -257,14 +256,7 @@ setup_gadget() {
         fi
     fi
 
-    # ADB FunctionFS
-    if [ "${ENABLE_ADB}" = "1" ]; then
-        log "Enabling ADB"
-        cfg_str="${cfg_str}+ADB"
 
-        mkdir -p functions/ffs.adb
-        ln -sf functions/ffs.adb "${cfg}"
-    fi
 
     # Set configuration attributes
     if [ "${has_wakeup}" = "1" ]; then
@@ -280,45 +272,11 @@ setup_gadget() {
     log "Using UDC: ${udc}"
     echo "${udc}" > UDC || error "Failed to enable UDC"
 
-    # Setup ADB if enabled
-    if [ "${ENABLE_ADB}" = "1" ]; then
-        setup_adb
-    fi
 
     # Configure network interfaces
     setup_network
 }
 
-setup_adb() {
-    log "Setting up ADB FunctionFS"
-    
-    # Create FunctionFS mount point
-    mkdir -p /dev/ffs-adb
-    
-    # Mount FunctionFS
-    if ! mountpoint -q /dev/ffs-adb; then
-        log "Mounting FunctionFS for ADB"
-        mount -t functionfs adb /dev/ffs-adb || {
-            log "Warning: Failed to mount FunctionFS for ADB"
-            return 1
-        }
-    fi
-    
-    # Start ADB daemon
-    if command -v adbd >/dev/null 2>&1; then
-        log "Starting ADB daemon"
-        # Kill any existing adbd process
-        pkill -f adbd || true
-        sleep 1
-        
-        # Start adbd
-        nohup adbd >/var/log/adbd.log 2>&1 &
-        echo $! > /var/run/adbd.pid
-        log "ADB daemon started with PID: $(cat /var/run/adbd.pid)"
-    else
-        log "Warning: adbd not found, ADB will not work"
-    fi
-}
 
 setup_network() {
     log "Configuring network interfaces"
@@ -384,21 +342,6 @@ teardown_gadget() {
     # Disable gadget
     echo "" > UDC || true
 
-    # Stop ADB daemon
-    if [ -f /var/run/adbd.pid ]; then
-        local adb_pid="$(cat /var/run/adbd.pid 2>/dev/null)"
-        if [ -n "${adb_pid}" ] && kill -0 "${adb_pid}" 2>/dev/null; then
-            log "Stopping ADB daemon (PID: ${adb_pid})"
-            kill "${adb_pid}" 2>/dev/null || true
-        fi
-        rm -f /var/run/adbd.pid
-    fi
-
-    # Unmount FunctionFS for ADB
-    if mountpoint -q /dev/ffs-adb; then
-        log "Unmounting FunctionFS for ADB"
-        umount /dev/ffs-adb 2>/dev/null || true
-    fi
 
     # Remove network interfaces from bridge
     for func in functions/*/ifname; do

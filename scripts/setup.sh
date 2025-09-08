@@ -102,7 +102,10 @@ systemctl enable nftables
 # Enable hostapd for WiFi AP
 systemctl enable hostapd
 
-# ADB is now handled by the USB gadget service
+# Disable getty on USB serial port to use it for ADB
+systemctl disable getty@ttyGS0.service
+
+# ADB daemon will be started by rc.local on USB serial port
 
 # Make sure ModemManager is enabled for LTE
 systemctl enable ModemManager

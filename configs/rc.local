@@ -2,6 +2,7 @@
 
 main() {
     cleanup_wwan
+    start_adb
 }
 
 cleanup_wwan() {
@@ -25,6 +26,44 @@ cleanup_wwan() {
     sleep 2
     if ! ip -4 addr show wwan0 | grep -q "inet "; then
         systemctl restart ModemManager
+    fi
+}
+
+
+start_adb() {
+    # Start ADB daemon on USB serial port
+    if command -v adbd >/dev/null 2>&1; then
+        echo "Starting ADB daemon on USB serial port..."
+        
+        # Wait for USB serial port to be available
+        max_wait=10
+        waited=0
+        while [ $waited -lt $max_wait ]; do
+            if [ -e /dev/ttyGS0 ]; then
+                break
+            fi
+            echo "Waiting for USB serial port /dev/ttyGS0..."
+            sleep 1
+            waited=$((waited + 1))
+        done
+        
+        if [ -e /dev/ttyGS0 ]; then
+            echo "Starting ADB on USB serial port /dev/ttyGS0"
+            # Set proper permissions
+            chmod 666 /dev/ttyGS0
+            
+            # Start adbd on serial port
+            nohup adbd -a -P /dev/ttyGS0 >/var/log/adbd.log 2>&1 &
+            echo $! > /var/run/adbd.pid
+            echo "ADB daemon started with PID: $(cat /var/run/adbd.pid)"
+        else
+            echo "USB serial port not found, starting ADB in default mode"
+            nohup adbd -a >/var/log/adbd.log 2>&1 &
+            echo $! > /var/run/adbd.pid
+            echo "ADB daemon started with PID: $(cat /var/run/adbd.pid)"
+        fi
+    else
+        echo "ADB daemon not found"
     fi
 }
 
