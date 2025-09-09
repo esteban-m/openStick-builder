@@ -1,0 +1,17 @@
+[Unit]
+Description=ADB-like Shell Service via Serial
+Requires=msm8916-usb-gadget.service
+After=msm8916-usb-gadget.service
+BindsTo=msm8916-usb-gadget.service
+
+[Service]
+Type=simple
+ExecStartPre=/usr/sbin/setup-usb-network.sh
+ExecStart=/usr/sbin/adb-network.sh
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

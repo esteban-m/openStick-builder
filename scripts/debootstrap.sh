@@ -85,6 +85,15 @@ chmod +x ${CHROOT}/etc/rc.local
 cp -a configs/msm8916-usb-gadget.sh ${CHROOT}/usr/sbin/
 cp configs/msm8916-usb-gadget.conf ${CHROOT}/etc/
 
+# add ADB service
+cp configs/system/adbd.service ${CHROOT}/etc/systemd/system/
+cp configs/adbd-wrapper.sh ${CHROOT}/usr/sbin/
+cp configs/adb-network.sh ${CHROOT}/usr/sbin/
+cp configs/setup-usb-network.sh ${CHROOT}/usr/sbin/
+chmod +x ${CHROOT}/usr/sbin/adbd-wrapper.sh
+chmod +x ${CHROOT}/usr/sbin/adb-network.sh
+chmod +x ${CHROOT}/usr/sbin/setup-usb-network.sh
+
 # setup WiFi AP with hostapd
 mkdir -p ${CHROOT}/etc/hostapd
 cp configs/hostapd.conf ${CHROOT}/etc/hostapd/

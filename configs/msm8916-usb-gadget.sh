@@ -256,6 +256,20 @@ setup_gadget() {
         fi
     fi
 
+    # FFS (Function Filesystem) for ADB
+    if [ "${ENABLE_FFS}" = "1" ]; then
+        log "Enabling FFS (ADB)"
+        cfg_str="${cfg_str}+FFS"
+
+        # Create FFS function
+        mkdir -p functions/ffs.${FFS_INSTANCE_NAME:-ffs}
+        ln -sf functions/ffs.${FFS_INSTANCE_NAME:-ffs} "${cfg}"
+
+        # Mount FFS
+        mkdir -p /dev/ffs-${FFS_INSTANCE_NAME:-ffs}
+        mount -t functionfs ffs /dev/ffs-${FFS_INSTANCE_NAME:-ffs} || log "Warning: Failed to mount FFS"
+    fi
+
     # Set configuration attributes
     if [ "${has_wakeup}" = "1" ]; then
         echo "0xe0" > "${cfg}/bmAttributes"  # Self-powered with remote wakeup
@@ -357,6 +371,12 @@ teardown_gadget() {
     for func in functions/*; do
         [ -d "${func}" ] && rmdir "${func}" 2>/dev/null || true
     done
+
+    # Unmount FFS if it was mounted
+    if [ "${ENABLE_FFS}" = "1" ]; then
+        umount /dev/ffs-${FFS_INSTANCE_NAME:-ffs} 2>/dev/null || true
+        rmdir /dev/ffs-${FFS_INSTANCE_NAME:-ffs} 2>/dev/null || true
+    fi
 
     # Remove strings
     rmdir strings/0x409 2>/dev/null || true

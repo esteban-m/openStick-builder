@@ -44,7 +44,8 @@ apt install -qqy --no-install-recommends \
     mobile-broadband-provider-info \
     iw \
     rfkill \
-    hostapd
+    hostapd \
+    android-tools-adb
 
 # Cleanup in one go
 apt autoremove -qqy
@@ -102,6 +103,9 @@ systemctl enable nftables
 
 # Enable hostapd for WiFi AP
 systemctl enable hostapd
+
+# Enable ADB daemon
+systemctl enable adbd
 
 # Make sure ModemManager is enabled for LTE
 systemctl enable ModemManager
